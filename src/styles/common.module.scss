@@ -1,1 +1,24 @@
-// TODO
+.Container {
+    max-width: 720px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.info {
+    font-size: 0.875rem;
+    margin-top: 1.5rem;
+    display: flex;
+    align-items: center;
+    color: var(--info);
+    span {
+        margin-right: 2rem;
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        svg {
+            font-size: 1.4rem;
+            vertical-align: middle;
+            margin-right: 0.4rem;
+        }
+    }
+}
