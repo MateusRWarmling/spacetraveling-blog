@@ -1,3 +1,4 @@
+import Header from '../components/Header';
 import { GetStaticProps } from 'next';
 import Prismic from '@prismicio/client'
 
@@ -10,6 +11,8 @@ import styles from './home.module.scss';
 
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
+
+import Link from 'next/link';
 
 interface Post {
   uid?: string;
@@ -33,20 +36,23 @@ interface HomeProps {
 export default function Home({next_page, results}: PostPagination) {
   return(
     <>
+      <Header />
       <main className={commonStyles.Container}>
         { results.map( post => (
-          <a href="">
-          <div className={styles.postContent}>
-            <h2>
-              {post.data.title}
-            </h2>
-            <p>{post.data.subtitle}</p>
-            <div className={commonStyles.info}>
-              <span><FiCalendar />{format(new Date(post.first_publication_date), 'dd MMM yyyy', {locale: ptBR,})}</span>
-              <span><FiUser /> {post.data.author}</span>
+          <Link key={post.uid} href={`/post/${post.uid}`}>
+            <a href="">
+            <div className={styles.postContent}>
+              <h2>
+                {post.data.title}
+              </h2>
+              <p>{post.data.subtitle}</p>
+              <div className={commonStyles.info}>
+                <span><FiCalendar />{format(new Date(post.first_publication_date), 'dd MMM yyyy', {locale: ptBR,})}</span>
+                <span><FiUser /> {post.data.author}</span>
+              </div>
             </div>
-          </div>
-          </a>
+            </a>
+          </Link>
         ))}
         
         {/* <a href="">
