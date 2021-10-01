@@ -15,3 +15,14 @@
     }
 
 }
+
+.newPageButton {
+    background-color: transparent;
+    border: none;
+    font-size: 1.125rem;
+    color: var(--highlight);
+
+    &:hover {
+        text-decoration: underline;
+    }
+}

@@ -13,6 +13,7 @@ import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 
 import Link from 'next/link';
+import { useState } from 'react';
 
 interface Post {
   uid?: string;
@@ -33,14 +34,41 @@ interface HomeProps {
   postsPagination: PostPagination;
 }
 
-export default function Home({next_page, results}: PostPagination) {
+export default function Home({ postsPagination }: HomeProps) {
+  const [data, setData] = useState(postsPagination);
+
+  async function getNextPage(): Promise<void> {
+      fetch(data.next_page)
+        .then(response => response.json())
+        .then(responseData => {
+          const newPosts = responseData.results.reduce((acc, result) => {
+            acc.push({
+              uid: result.uid,
+              first_publication_date: result.first_publication_date,
+              data: {
+                title: result.data.title,
+                subtitle: result.data.subtitle,
+                author: result.data.author,
+              },
+            })
+            
+            return acc;
+          }, [...data.results]);
+
+          setData({
+            next_page: responseData.next_page,
+            results: newPosts,
+          })
+        }) 
+  }
+
   return(
     <>
       <Header />
       <main className={commonStyles.Container}>
-        { results.map( post => (
+        { data.results?.map( post => (
           <Link key={post.uid} href={`/post/${post.uid}`}>
-            <a href="">
+            <a>
             <div className={styles.postContent}>
               <h2>
                 {post.data.title}
@@ -54,34 +82,17 @@ export default function Home({next_page, results}: PostPagination) {
             </a>
           </Link>
         ))}
-        
-        {/* <a href="">
-          <div className={styles.postContent}>
-            <h2>
-              Como utilizar Hooks
-            </h2>
-            <p>Pensando em sincronização em vez de ciclos de vida.</p>
-            <div className={commonStyles.info}>
-              <span><FiCalendar /> 29 ago 2021</span>
-              <span><FiUser /> Mateus Warmling</span>
-            </div>
-          </div>
-        </a> */}
 
-        {/* <a href="">
-          <div className={styles.postContent}>
-            <h2>
-              Como utilizar Hooks
-            </h2>
-            <p>Pensando em sincronização em vez de ciclos de vida.</p>
-            <div className={commonStyles.info}>
-              <span><FiCalendar /> 29 ago 2021</span>
-              <span><FiUser /> Mateus Warmling</span>
-            </div>
-          </div>
-        </a> */}
-      
-      
+        {
+          data.next_page && (
+            <button
+              className={styles.newPageButton}
+              onClick={getNextPage}
+            >
+              Carregar mais posts
+            </button>
+          )
+        }  
       </main>
     </>
   )
@@ -99,21 +110,27 @@ export const getStaticProps: GetStaticProps = async () => {
   const posts = postsResponse.results.map(post => {
     return {
         uid: post.uid,
-        first_publication_date: post.last_publication_date,
+        first_publication_date: post.first_publication_date,
         data: {
         title: post.data.title,
         subtitle: post.data.subtitle,
         author: post.data.author,
-      }
+      },
     };
   });
 
-  const postPagination = {
+  console.log(postsResponse)
+
+  const { next_page } = postsResponse;
+
+  const postsPagination = {
     results: posts,
-    next_page: postsResponse
+    next_page,
   }
 
   return {
-    props: postPagination,
+    props: {
+      postsPagination,
+    },
   };
 };

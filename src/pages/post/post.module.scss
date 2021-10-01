@@ -1,5 +1,5 @@
 .banner {
-    max-width: 100%;
+    width: 100%;
 }
 
 .title {
@@ -22,6 +22,8 @@
 
     p {
         font-weight: normal;
+        line-height: 1.5rem;
+        text-align: justify;
         a {
             color: var(--highlight)
         }

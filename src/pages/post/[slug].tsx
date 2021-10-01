@@ -50,23 +50,22 @@ export default function Post({post}: PostProps) {
   }
   
   function readTimeCalculator() {
-    const numberOfWords = post?.data?.content?.reduce((contentWords, content) => {
-      contentWords.push(...content.heading.split(' '));
+    const numberOfWords = post.data.content.reduce((acc, content) => {
+      acc.push(...content.heading.split(' '));
 
       const words = RichText.asText(content.body)
         .replace(/[^\w|\s]/g, '')
         .split(' ');
 
-      contentWords.push(...words);
+      acc.push(...words);
 
-      return contentWords;
-    }, []);
+      return acc;
+    }, [])
 
     return Math.ceil(numberOfWords.length / 200);
   }
 
   const readTime = readTimeCalculator();
-  
 
   return (
     <>
@@ -120,9 +119,11 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const response = await prismic.getByUID('posts', String(slug), {});
   
   const post = {
+    uid: response.uid,
     first_publication_date: response.first_publication_date,
   data: {
     title: response.data.title,
+    subtitle: response.data.subtitle,
     banner: {
       url: response.data.banner.url,
     },
